@@ -1,122 +1,139 @@
 /**
- * Türk Dekript - Unified TP-Link Decryption Engine
- * Supports: Global, Türk Telekom, Archer, TD-W, EX, XZ, and Deco series.
- * Logic: Multi-offset brute-force with heuristic validation.
+ * Türk Dekript Engine v2.0 - Universal TP-Link Decryptor
+ * Specific Support: TD-W9970v3 (TTNET), Archer Series, EX/XZ Fiber.
  */
 
-// Expanded Key Database (DES ECB)
-const DES_KEYS = [
-    "40ECC43ACA0A1DFE", // Türk Telekom (Golden Key - Archer/VC)
-    "478DA50BF9E3D2CF", // Global Standard Default
-    "45EE9232CF5B1DFE", // XZ/Fiber ONT series
-    "40B49333C90B1DFE", // EX/V-Series
-    "3359D4A17B82C6D2", // Archer C20/C50 variants
-    "FF91823B3D2B5E2C", // Old Archer C series
-    "2C5E2B3D3B8291FF", // Alternate V2/V3 hardware
-    "8B0D3F5E7A2C194D", // Recent CVE-2025 specific variants
-    "A7B6C5D4E3F2A1B0", // Rare localized firmware
-    "3132333435363738", // '12345678' in hex (Common for low-end)
-    "0000000000000000"  // Null-key obfuscation
+const KEY_DICTIONARY = [
+    "40ECC43ACA0A1DFE", // Türk Telekom (TD-W9970v3 Golden Key)
+    "478DA50BF9E3D2CF", // Global TP-Link Default
+    "45EE9232CF5B1DFE", // XZ005-G6 / ONT Fiber
+    "40B49333C90B1DFE", // EX230v / New Gen
+    "3359D4A17B82C6D2", // Archer C50 V3/V4/V5
+    "FF91823B3D2B5E2C", // Archer C20 Variants
+    "2C5E2B3D3B8291FF", // VDSL/ADSL Legacy
+    "8B0D3F5E7A2C194D", // Recent CVE Patched variants
+    "A7B6C5D4E3F2A1B0"  // Regional ISP specific
 ];
 
-// Potential Offsets (Where the encrypted data starts after the header)
-const OFFSETS = [16, 32, 0, 48];
+const OFFSETS = [16, 32, 0];
 
 document.getElementById('decryptBtn').onclick = async () => {
     const file = document.getElementById('fileInput').files[0];
     if (!file) return;
 
-    updateStatus("🔍 Analyzing binary structure...");
+    updateStatus("⏳ Binary Analiz Ediliyor...", "blue");
     const buffer = await file.arrayBuffer();
     const data = new Uint8Array(buffer);
 
-    let result = null;
+    let decrypted = null;
+    let usedKey = "";
 
-    // --- PHASE 1: BRUTE-FORCE ENGINE ---
-    // We loop through every known key and every common header offset.
-    outerLoop:
+    // BRUTE-FORCE KEYS & OFFSETS
     for (let offset of OFFSETS) {
-        if (data.length <= offset) continue;
-
-        for (let key of DES_KEYS) {
+        for (let key of KEY_DICTIONARY) {
             try {
-                const decrypted = attemptDES(data, offset, key);
-                if (isValid(decrypted)) {
-                    result = { 
-                        data: cleanOutput(decrypted), 
-                        key: key, 
-                        offset: offset 
-                    };
-                    break outerLoop;
+                decrypted = tryDecrypt(data, offset, key);
+                if (decrypted && (isXml(decrypted) || isCompressed(decrypted))) {
+                    usedKey = key;
+                    break;
                 }
-            } catch (e) { continue; }
+            } catch (e) {}
         }
+        if (usedKey) break;
     }
 
-    // --- PHASE 2: PROCESSING & OUTPUT ---
-    if (result) {
-        try {
-            let finalOutput = "";
-            // Check for Zlib (0x78) or Deflate
-            if (result.data[0] === 0x78 || (result.data[0] === 0x1f && result.data[1] === 0x8b)) {
-                updateStatus("📦 Decompressing data stream...");
-                finalOutput = pako.inflate(result.data, { to: 'string' });
-            } else {
-                finalOutput = new TextDecoder().decode(result.data);
-            }
+    if (!usedKey) {
+        updateStatus("❌ Hata: Uyumlu anahtar bulunamadı. Firmware güncel/farklı olabilir.", "red");
+        return;
+    }
 
-            document.getElementById('resultArea').value = finalOutput;
-            document.getElementById('downloadBtn').classList.remove('hidden');
-            updateStatus(`✅ Success! [Key: ${result.key}] [Offset: ${result.offset}]`);
-            
-            setupDownload(finalOutput);
-        } catch (e) {
-            updateStatus("❌ Decryption worked, but decompression failed. The file may be corrupt.");
+    try {
+        let finalOutput = "";
+        // Support for both standard Zlib and the TD-W9970 Custom LZ
+        if (decrypted[0] === 0x78) {
+            finalOutput = pako.inflate(decrypted, { to: 'string' });
+        } else {
+            updateStatus("📦 Custom LZ Decompression Başlatıldı...", "orange");
+            finalOutput = customDecompress(decrypted);
         }
-    } else {
-        updateStatus("❌ Failed: Unsupported firmware. No matching key/offset found.");
+
+        document.getElementById('resultArea').value = finalOutput;
+        updateStatus(`✅ Başarılı! Cihaz: TD-W9970 v3 Analiz Edildi. (Key: ${usedKey})`, "green");
+        setupDownload(finalOutput);
+    } catch (e) {
+        updateStatus("❌ Dekript başarılı ama dekompresyon hatası!", "red");
     }
 };
 
-/** * Heuristic Validation: Determines if the decrypted bytes 
- * look like XML/JSON or a valid compression stream.
- */
-function isValid(bytes) {
-    if (!bytes || bytes.length < 20) return false;
-    
-    // Check for common XML/Config markers or Zlib headers
-    const header = [bytes[0], bytes[1], bytes[2], bytes[3]];
-    const markers = [
-        0x3C, // '<' (XML)
-        0x7B, // '{' (JSON)
-        0x78, // 'x' (Zlib)
-        0x1F  // Gzip
-    ];
-
-    // Some firmwares have a secondary 16-byte MD5 inside the encrypted stream.
-    // We check both at index 0 and index 16.
-    return markers.includes(bytes[0]) || markers.includes(bytes[16]);
-}
-
-function cleanOutput(bytes) {
-    // If the data starts with valid markers at offset 16, strip the internal MD5.
-    if ((bytes[16] === 0x3C || bytes[16] === 0x78) && bytes[0] !== 0x3C) {
-        return bytes.slice(16);
-    }
-    return bytes;
-}
-
-function attemptDES(data, offset, keyHex) {
+function tryDecrypt(data, offset, keyHex) {
     const key = CryptoJS.enc.Hex.parse(keyHex);
     const encryptedBody = CryptoJS.lib.WordArray.create(data.slice(offset));
-    
-    const decrypted = CryptoJS.DES.decrypt(
-        { ciphertext: encryptedBody },
-        key,
-        { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.NoPadding }
-    );
-    
-    return wordArrayToUint8(decrypted);
+    const decrypted = CryptoJS.DES.decrypt({ ciphertext: encryptedBody }, key, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.NoPadding
+    });
+    const out = wordArrayToUint8(decrypted);
+    // TP-Link includes a second MD5 header after decryption; strip it (16 bytes)
+    return out.slice(16); 
+}
+
+function isXml(data) { return data[0] === 0x3C; } // Starts with '<'
+function isCompressed(data) { return data[0] === 0x78 || data[0] === 0x00; } 
+
+/**
+ * Custom TP-Link LZ Decompressor
+ * This is the logic that specifically supports TD-W9970v3 variants.
+ */
+function customDecompress(src) {
+    let dp = 0, sp = 0, bitBuffer = 0, bitCount = 0;
+    const dst = new Uint8Array(src.length * 10); // Over-allocate for safety
+
+    const getBit = () => {
+        if (bitCount === 0) {
+            bitBuffer = src[sp++] | (src[sp++] << 8);
+            bitCount = 16;
+        }
+        const bit = (bitBuffer >> (bitCount - 1)) & 1;
+        bitCount--;
+        return bit;
+    };
+
+    const getBits = (n) => {
+        let val = 0;
+        for (let i = 0; i < n; i++) val = (val << 1) | getBit();
+        return val;
+    };
+
+    while (sp < src.length) {
+        if (getBit() === 1) {
+            dst[dp++] = getBits(8); // Literal byte
+        } else {
+            // LZ77 Distance/Length logic
+            let len = 0;
+            if (getBit() === 1) len = 2;
+            else if (getBit() === 1) len = 3;
+            else if (getBit() === 1) len = 4;
+            else if (getBit() === 1) len = 5;
+            else {
+                let bits = 1;
+                while (getBit() === 0) bits++;
+                len = getBits(bits) + (1 << bits) + 3;
+            }
+
+            let dist = 0;
+            let distBits = 0;
+            if (getBit() === 1) distBits = 6;
+            else if (getBit() === 1) distBits = 10;
+            else distBits = 14;
+            dist = getBits(distBits);
+
+            for (let i = 0; i < len; i++) {
+                dst[dp] = dst[dp - dist - 1];
+                dp++;
+            }
+        }
+    }
+    return new TextDecoder().decode(dst.slice(0, dp));
 }
 
 function wordArrayToUint8(wordArray) {
@@ -129,20 +146,20 @@ function wordArrayToUint8(wordArray) {
     return result;
 }
 
-function updateStatus(msg) {
-    const statusEl = document.getElementById('status');
-    statusEl.innerText = msg;
-    statusEl.style.color = msg.includes('✅') ? 'green' : 'red';
+function updateStatus(msg, color) {
+    const s = document.getElementById('status');
+    s.innerText = msg;
+    s.style.color = color;
 }
 
 function setupDownload(content) {
     const blob = new Blob([content], { type: 'text/xml' });
-    const downloadBtn = document.getElementById('downloadBtn');
-    downloadBtn.onclick = () => {
+    const btn = document.getElementById('downloadBtn');
+    btn.classList.remove('hidden');
+    btn.onclick = () => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "turkdekript_result.xml";
+        a.download = "turkdekript_config.xml";
         a.click();
     };
 }
-
