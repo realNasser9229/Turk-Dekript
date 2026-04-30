@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Türk Dekript - TP-Link Config Decryptor</title>
+    <title>Türk Dekript</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
@@ -11,29 +11,28 @@
 <body>
     <header>
         <div class="banner-container">
-            <img src="logo.png" alt="Logo" class="top-left-logo">
-            <img src="banner-strip.png" alt="Banner" class="banner-extension">
+            <img src="turkdekript.png" alt="Logo" class="main-logo">
+            <img src="turkdekript2.png" alt="Banner" class="banner-fill">
         </div>
-        <div class="nav-bar">
-            <span>Türk Dekript | Firmware Support: Universal (V1-V5)</span>
+        <div class="blue-bar">
+            <span>Türk Dekript | Donanım Yazılımı Desteği: Evrensel</span>
         </div>
     </header>
 
     <main>
-        <div class="content-box">
-            <h2>Konfigürasyon Dosyası Dekriptör</h2>
-            <p>Upload your <b>conf.bin</b> or <b>config.bin</b> file to extract the XML/JSON data.</p>
-            
-            <div class="upload-area">
-                <input type="file" id="fileInput" accept=".bin">
-                <button id="decryptBtn" class="tp-btn">Decrypt Now</button>
-            </div>
-
-            <div id="status" class="status-msg">Waiting for file...</div>
-            
-            <div class="output-area">
-                <textarea id="resultArea" readonly placeholder="Decrypted content will appear here..."></textarea>
-                <button id="downloadBtn" class="tp-btn hidden">Download .xml</button>
+        <div class="tp-container">
+            <div class="tp-header">Yönetim - Yedekle ve Geri Yükle</div>
+            <div class="tp-content">
+                <p>Config dosyasını (.bin) seçin ve şifresini çözerek içeriği görüntüleyin.</p>
+                <div class="action-row">
+                    <input type="file" id="fileInput" accept=".bin">
+                    <button id="decryptBtn" class="tp-btn">Dekript Et</button>
+                </div>
+                <div id="status" class="status-msg">Dosya bekleniyor...</div>
+                <textarea id="resultArea" readonly spellcheck="false" placeholder="XML verisi burada görünecek..."></textarea>
+                <div class="action-row right">
+                    <button id="downloadBtn" class="tp-btn hidden">İndir (.xml)</button>
+                </div>
             </div>
         </div>
     </main>
