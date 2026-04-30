@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türk Dekript - TP-Link Config Decryptor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="banner-container">
+            <img src="logo.png" alt="Logo" class="top-left-logo">
+            <img src="banner-strip.png" alt="Banner" class="banner-extension">
+        </div>
+        <div class="nav-bar">
+            <span>Türk Dekript | Firmware Support: Universal (V1-V5)</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="content-box">
+            <h2>Konfigürasyon Dosyası Dekriptör</h2>
+            <p>Upload your <b>conf.bin</b> or <b>config.bin</b> file to extract the XML/JSON data.</p>
+            
+            <div class="upload-area">
+                <input type="file" id="fileInput" accept=".bin">
+                <button id="decryptBtn" class="tp-btn">Decrypt Now</button>
+            </div>
+
+            <div id="status" class="status-msg">Waiting for file...</div>
+            
+            <div class="output-area">
+                <textarea id="resultArea" readonly placeholder="Decrypted content will appear here..."></textarea>
+                <button id="downloadBtn" class="tp-btn hidden">Download .xml</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="decryptor.js"></script>
+</body>
+</html>
