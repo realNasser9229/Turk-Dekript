@@ -1,58 +1,72 @@
 const KEYS = [
-    "478DA50BF9E3D2CF", // Standard/Global Default
-    "40ECC43ACA0A1DFE", // VC220-G3U / Common Türk Telekom
-    "45EE9232CF5B1DFE", // XZ005-G6
-    "40B49333C90B1DFE"  // EX230V
+    "40ECC43ACA0A1DFE", // Türk Telekom Archer/VC series (Modern)
+    "478DA50BF9E3D2CF", // Default Global TP-Link
+    "45EE9232CF5B1DFE", // XZ series / Fiber ONT
+    "40B49333C90B1DFE"  // EX series
 ];
 
-document.getElementById('decryptBtn').onclick = async () => {
-    const file = document.getElementById('fileInput').files[0];
-    if (!file) return alert("Select a file first.");
+const decryptBtn = document.getElementById('decryptBtn');
+const fileInput = document.getElementById('fileInput');
+const resultArea = document.getElementById('resultArea');
+const status = document.getElementById('status');
+const downloadBtn = document.getElementById('downloadBtn');
+
+decryptBtn.onclick = async () => {
+    if (!fileInput.files[0]) return;
     
-    updateStatus("Processing...");
-    const buffer = await file.arrayBuffer();
+    status.innerText = "Dekript ediliyor...";
+    const buffer = await fileInput.files[0].arrayBuffer();
     const data = new Uint8Array(buffer);
     
-    let decrypted = null;
-    let usedKey = "";
+    let decryptedData = null;
+    let foundKey = "";
 
-    // 1. Try Decryption with multiple keys
-    for (let keyHex of KEYS) {
+    // Iterate through known ISP keys
+    for (const keyHex of KEYS) {
         try {
-            decrypted = tryDecrypt(data, keyHex);
-            if (decrypted) {
-                usedKey = keyHex;
+            decryptedData = performDecryption(data, keyHex);
+            if (decryptedData) {
+                foundKey = keyHex;
                 break;
             }
         } catch (e) { continue; }
     }
 
-    if (!decrypted) {
-        updateStatus("Error: Could not decrypt. Unsupported firmware or wrong key.");
+    if (!decryptedData) {
+        status.innerText = "Hata: Şifre çözülemedi. Geçersiz dosya veya bilinmeyen donanım yazılımı.";
         return;
     }
 
-    // 2. Handle Compression (Zlib or Custom LZ)
-    let finalContent = "";
     try {
-        if (isZlib(decrypted)) {
-            finalContent = pako.inflate(decrypted, { to: 'string' });
+        let finalXml = "";
+        // Check for Zlib compression header (0x78)
+        if (decryptedData[0] === 0x78) {
+            finalXml = pako.inflate(decryptedData, { to: 'string' });
         } else {
-            // Try custom decompression (older Türk Telekom models)
-            finalContent = customDecompress(decrypted);
+            finalXml = new TextDecoder().decode(decryptedData);
         }
+
+        resultArea.value = finalXml;
+        status.innerText = `Başarılı! (Anahtar: ${foundKey})`;
+        downloadBtn.classList.remove('hidden');
         
-        document.getElementById('resultArea').value = finalContent;
-        document.getElementById('downloadBtn').classList.remove('hidden');
-        updateStatus(`Success! Decrypted using key: ${usedKey}`);
+        // Prepare download
+        const blob = new Blob([finalXml], { type: 'text/xml' });
+        downloadBtn.onclick = () => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "decrypted_config.xml";
+            a.click();
+        };
     } catch (e) {
-        updateStatus("Decryption succeeded but decompression failed. Check file integrity.");
+        status.innerText = "Dekript başarılı ancak sıkıştırma açılamadı.";
     }
 };
 
-function tryDecrypt(data, keyHex) {
+function performDecryption(data, keyHex) {
     const key = CryptoJS.enc.Hex.parse(keyHex);
-    // TP-Link files usually have a 16-byte MD5 header
+    // TP-Link files use 16-byte MD5 header. Skip it for decryption.
     const encryptedBody = CryptoJS.lib.WordArray.create(data.slice(16));
     
     const decrypted = CryptoJS.DES.decrypt(
@@ -61,24 +75,14 @@ function tryDecrypt(data, keyHex) {
         { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.NoPadding }
     );
 
-    const decryptedBytes = wordArrayToUint8(decrypted);
-    // Basic verification: Check if it looks like XML or has the internal MD5
-    if (decryptedBytes[16] === 0x3C || decryptedBytes[0] === data[0]) {
-        return decryptedBytes.slice(16); // Strip internal MD5
+    const out = wordArrayToUint8(decrypted);
+    
+    // Validation: Standard TP-Link configs start with an internal MD5 or < (XML)
+    // We strip the internal 16-byte header from the decrypted stream
+    if (out[16] === 0x3C || out[16] === 0x78) {
+        return out.slice(16);
     }
     return null;
-}
-
-function isZlib(data) {
-    return data[0] === 0x78 && (data[1] === 0x01 || data[1] === 0x9C || data[1] === 0xDA);
-}
-
-// Custom TP-Link Decompression Port (Simplified)
-function customDecompress(src) {
-    // This is a placeholder for the bit-stream LZ logic used in tpconf_bin_xml
-    // Most newer Türk Telekom devices use Zlib, so Pako handles them.
-    // If it's pure XML, return as string.
-    return new TextDecoder().decode(src);
 }
 
 function wordArrayToUint8(wordArray) {
@@ -90,7 +94,3 @@ function wordArrayToUint8(wordArray) {
     }
     return result;
 }
-
-function updateStatus(msg) {
-    document.getElementById('status').innerText = msg;
-  }
