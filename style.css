@@ -1,145 +1,120 @@
-/* RESET & CORE */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* RESET */
+* { margin: 0; padding: 0; box-sizing: content-box; }
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 11px;
     background-color: #fff;
-    color: #333;
+    font-family: Arial, sans-serif;
+    min-width: 1000px; /* Forces the browser to keep the width wide */
 }
 
-/* --- BANNER STITCHING LOGIC --- */
-.main-header {
-    width: 100%;
+#desktop-wrapper {
+    width: 1000px; /* Locked width to match router firmware UI */
+    margin: 0 auto;
+}
+
+/* --- THE BANNER EXTENSION --- */
+.header-full {
     height: 80px;
-    overflow: hidden;
-    background-color: #0072bc;
-    border-bottom: 2px solid #005a74;
-}
-
-.banner-stitch {
-    display: flex;
-    height: 100%;
     width: 100%;
+    /* turkdekript2 is the extension background */
+    background: url('turkdekript2.png.jpg') repeat-x;
+    background-size: contain;
+    border-bottom: 1px solid #005a74;
 }
 
-.banner-logo {
-    height: 100%;
-    width: auto;
-    flex-shrink: 0; /* Prevents logo from squashing */
-}
-
-.banner-extension {
-    flex-grow: 1;
-    height: 100%;
-    background-image: url('turkdekript2.png.jpg');
-    background-size: cover;
-    background-position: center;
+.header-content {
+    display: block;
     position: relative;
+    height: 80px;
 }
 
-.header-text-overlay {
+.main-logo {
     position: absolute;
-    right: 15px;
-    top: 8px;
+    left: 20px;
+    top: 15px;
+    height: 45px;
+}
+
+.header-right {
+    position: absolute;
+    right: 20px;
+    top: 10px;
     text-align: right;
     color: white;
 }
 
-.lang-tag { border: 1px solid #fff; padding: 0 3px; font-size: 10px; }
-.mid-row { font-weight: bold; font-size: 13px; margin: 4px 0; }
-.bot-row { font-size: 10px; opacity: 0.9; }
+.user-info { font-size: 10px; margin-bottom: 5px; }
+.model-line { font-weight: bold; font-size: 12px; }
+.model-sub { font-size: 10px; margin-top: 2px; }
 
-/* --- RESPONSIVE WRAPPER --- */
-.wrapper {
-    display: flex;
-    min-height: calc(100vh - 82px);
+/* --- FIXED LAYOUT --- */
+.main-layout {
+    display: block;
+    overflow: hidden;
 }
 
-/* SIDEBAR FIX */
-.sidebar {
+.sidebar-fixed {
     width: 180px;
+    float: left;
     background-color: #5c5c5c;
-    flex-shrink: 0; /* MANDATORY: Prevents the "sliver" collapse */
+    min-height: 900px;
 }
 
-.nav-menu { list-style: none; }
-.nav-menu li a {
+.nav { list-style: none; }
+.nav li a {
     display: block;
     padding: 8px 12px;
     color: #fff;
     text-decoration: none;
     border-bottom: 1px solid #6c6c6c;
+    font-size: 11px;
 }
 
-.nav-menu li a:hover, .has-sub.active > a { background-color: #0096c4; }
+.nav li a:hover { background-color: #0096c4; }
+.active-folder > a { background-color: #0096c4; }
 
-.sub-menu { list-style: none; background-color: #8c8c8c; }
+.sub-nav { background-color: #8c8c8c; list-style: none; }
 .sub-nav li a { padding-left: 25px; font-size: 10px; }
-.active-item { color: #00e4ff !important; font-weight: bold; }
+.active-link { color: #00e4ff !important; font-weight: bold; }
 
-/* CONTENT FIX */
-.main-content {
-    flex-grow: 1;
-    min-width: 0; /* Prevents overflow from breaking flexbox */
-    background: #fff;
+/* CONTENT */
+.content-fixed {
+    width: 820px;
+    float: left;
+    padding: 20px;
 }
 
-.blue-title {
+.blue-bar {
     background-color: #00a8d6;
+    padding: 4px 10px;
     color: white;
-    padding: 5px 12px;
 }
 
-.blue-title h2 { font-size: 13px; margin: 0; font-weight: bold; }
+.blue-bar h2 { font-size: 13px; font-weight: bold; }
 
-.content-padding {
-    padding: 15px;
+.content-body {
     border-top: 2px solid #00a8d6;
+    padding-top: 15px;
 }
 
-.action-card { margin-top: 10px; }
-.control-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
-.router-hr { border: 0; brder-top: 1px solid #d1d9e4; margin: 15px 0; }
+.hr-rule { border-bottom: 1px solid #b5c4d3; margin: 20px 0; }
 
-.hidden-input { display: none; }
-.file-label { color: #777; font-style: italic; }
-
-/* BUTTONS */
-.router-btn {
+.tp-button {
     background: linear-gradient(to bottom, #ffffff, #e6e6e6);
     border: 1px solid #707070;
-    padding: 3px 12px;
+    padding: 2px 12px;
     font-size: 11px;
     cursor: pointer;
-    border-radius: 2px;
 }
-.router-btn:active { background: #ccc; }
-.danger { color: #a00; }
-.success { color: #060; }
 
-/* EDITOR */
-.analyzer-box { margin-top: 20px; border: 1px solid #b5c4d3; padding: 10px; background: #fafafa; }
-.analyzer-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; }
 #resultArea {
     width: 100%;
-    height: 350px;
-    font-family: "Courier New", monospace;
+    height: 400px;
+    margin-top: 10px;
+    font-family: monospace;
     font-size: 11px;
-    border: 1px solid #999;
-    padding: 5px;
-    resize: vertical;
+    border: 1px solid #b5c4d3;
 }
-.analyzer-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-.status-indicator { color: #00607d; }
 
-/* MOBILE ADJUSTMENTS */
-@media (max-width: 768px) {
-    .wrapper { flex-direction: column; }
-    .sidebar { width: 100%; height: auto; }
-    .main-header { height: auto; padding-bottom: 10px; }
-    .banner-stitch { flex-direction: column; height: auto; }
-    .banner-logo { width: 100%; height: auto; }
-    .banner-extension { height: 60px; }
-    .header-text-overlay { position: static; text-align: center; padding: 10px; background: rgba(0,0,0,0.2); }
-    #resultArea { height: 250px; }
-}
+.analyzer-zone { margin-top: 20px; }
+.zone-bottom { margin-top: 10px; text-align: right; }
