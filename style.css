@@ -1,40 +1,61 @@
 * { margin: 0; padding: 0; }
-body { background: #fff; font-family: Arial; min-width: 1000px; }
+body { background: #fff; font-family: Arial, sans-serif; min-width: 1000px; }
 
-#wrapper { width: 1000px; margin: 0 auto; border: 1px solid #ccc; }
+#container { width: 1000px; margin: 0 auto; border: 1px solid #aaa; }
 
-/* --- THE 1:1 BANNER FIX --- */
+/* THE 1:1 BANNER STITCH */
 #header {
     height: 80px;
     width: 100%;
-    display: block;
-    background: url('turkdekript2.png.jpg') repeat-x; /* The extension */
-    background-size: auto 80px;
-    overflow: hidden;
+    /* Layer 1: The logo on the left (fixed) */
+    /* Layer 2: The extension repeating across the whole bar */
+    background: url('turkdekript.png.jpg') no-repeat left top, 
+                url('turkdekript2.png.jpg') repeat-x left top;
+    background-size: auto 80px, auto 80px;
+    position: relative;
+    border-bottom: 1px solid #005a74;
 }
 
-.banner-left { float: left; height: 80px; }
-.banner-left img { height: 80px; width: auto; display: block; }
+.header-text {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    text-align: right;
+    color: white;
+    font-size: 11px;
+    line-height: 1.4;
+}
 
-.banner-right { float: right; color: white; text-align: right; padding: 10px 20px; }
-.header-info { font-size: 11px; line-height: 1.4; }
+.lang-box { border: 1px solid white; padding: 0 3px; font-size: 10px; }
+.model-name { font-weight: bold; font-size: 12px; }
 
-/* --- LAYOUT --- */
-#main-container { display: block; overflow: hidden; border-top: 1px solid #005a74; }
+/* LAYOUT LOCKDOWN */
+#main { display: block; overflow: hidden; }
 
-#sidebar { width: 180px; float: left; background: #5c5c5c; min-height: 800px; }
-.nav { list-style: none; color: white; font-size: 11px; }
-.nav li { padding: 8px 12px; border-bottom: 1px solid #6c6c6c; cursor: pointer; }
-.nav li:hover, .active-folder { background: #0096c4; }
-.nav ul li { padding-left: 25px; background: #8c8c8c; border-bottom: 1px solid #999; }
-.active-link { color: #00e4ff; font-weight: bold; }
+#menu { width: 180px; float: left; background: #5c5c5c; min-height: 850px; }
+#menu ul { list-style: none; }
+#menu li { color: white; padding: 7px 12px; border-bottom: 1px solid #6c6c6c; font-size: 11px; cursor: pointer; }
+#menu li:hover { background: #0096c4; }
+#menu .folder { background: #0096c4; }
+#menu .folder ul li { background: #8c8c8c; padding-left: 25px; border-bottom: 1px solid #999; }
+#menu .active { color: #00e4ff; font-weight: bold; }
 
 #content { width: 780px; float: left; padding: 20px; }
-.blue-header { background: #00a8d6; color: white; padding: 4px 10px; font-weight: bold; font-size: 13px; }
-.main-body { border-top: 2px solid #00a8d6; padding-top: 15px; }
+.title-bar { background: #00a8d6; color: white; padding: 4px 10px; font-weight: bold; font-size: 13px; }
+.work-pane { border-top: 2px solid #00a8d6; padding-top: 15px; }
 
-.line { border-bottom: 1px solid #ddd; margin: 20px 0; }
-.tp-btn { background: #eee; border: 1px solid #777; padding: 2px 10px; font-size: 11px; cursor: pointer; }
+.spacer { border-bottom: 1px solid #ddd; margin: 20px 0; }
+.btn { background: #eee; border: 1px solid #777; padding: 2px 12px; font-size: 11px; cursor: pointer; }
 
-#resultArea { width: 100%; height: 400px; font-family: monospace; font-size: 11px; margin-top: 10px; }
-.editor-footer { text-align: right; margin-top: 10px; }
+/* EDITOR AREA */
+#resultArea {
+    width: 100%;
+    height: 400px;
+    margin-top: 15px;
+    font-family: monospace;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+.footer { text-align: right; margin-top: 10px; }
+#status { float: left; color: #005a74; font-weight: bold; }
