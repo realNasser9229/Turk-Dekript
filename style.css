@@ -99,7 +99,7 @@ body {
 
 .action-card { margin-top: 10px; }
 .control-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
-.router-hr { border: 0; border-top: 1px solid #d1d9e4; margin: 15px 0; }
+.router-hr { border: 0; brder-top: 1px solid #d1d9e4; margin: 15px 0; }
 
 .hidden-input { display: none; }
 .file-label { color: #777; font-style: italic; }
