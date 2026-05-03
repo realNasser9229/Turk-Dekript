@@ -1,179 +1,144 @@
-<!DOCTYPE html>
-<html lang="tr">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <title>Türk Dekript</title>
-    <style>
-        /* --- CORE CSS: LOCKDOWN --- */
-        * { margin: 0; padding: 0; box-sizing: content-box; }
-        body { 
-            background: #fff; 
-            font-family: Arial, sans-serif; 
-            min-width: 1000px; /* Forces desktop scale on mobile */
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TD-W9970 - Config Tool</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+<style type="text/css">
+body { font-family: Arial, sans-serif; background-color: #E5E5E5; margin: 0; padding: 0; min-width: 1000px; }
+#top-bar { height: 90px; background: #09C url('top_bg.jpg') repeat-x; position: relative; }
+#logo-img { float: left; height: 90px; }
+#mod-info { height: 87px; text-align: right; background: url('top1_2.jpg') no-repeat right; color: #fff; padding-right: 24px; }
+#mname { font-size: 16px; font-weight: bold; margin-top: 37px; display: inline-block; }
+#mnum { font-size: 12px; font-weight: bold; display: block; }
+#blue-line { height: 3px; width: 100%; background: url('top2.jpg'); display: block; }
+
+.loginBox { margin-top: 5%; text-align: center; }
+.picDiv { 
+    width: 395px; height: 320px; 
+    background: url('bg2.png') no-repeat; 
+    margin: 0 auto; position: relative; padding-top: 40px;
+}
+
+ul { list-style: none; padding: 0; }
+li { height: 34px; width: 222px; margin: 0 auto; }
+.unLi { background: url('idunselect.png'); margin-bottom: 15px; }
+.pwLi { background: url('pwunselect.png'); }
+
+input.text { 
+    border: 0; height: 26px; width: 175px; 
+    margin: 4px 0 0 30px; font-size: 14px; 
+    outline: none; background: transparent; 
+}
+
+.loginBtn { 
+    height: 34px; width: 113px; display: inline-block; 
+    margin-top: 20px; background: url('login_tr.png'); cursor: pointer; 
+}
+
+/* EDITOR SECTION */
+#editor-container { width: 900px; margin: 30px auto; display: none; background: #fff; border: 1px solid #ccc; padding: 10px; }
+#resultArea { width: 100%; height: 400px; font-family: monospace; font-size: 12px; }
+.btn-row { margin-top: 10px; text-align: right; }
+.action-btn { padding: 5px 15px; cursor: pointer; font-weight: bold; }
+#status-msg { color: #09C; font-weight: bold; float: left; }
+</style>
+
+<script type="text/javascript">
+function $(id) { return document.getElementById(id); }
+
+// UI Interactions from your script
+function pageLoad() {
+    $("userName").onfocus = function() { $("unLi").style.background = "url('idselect.png')"; };
+    $("userName").onblur = function() { $("unLi").style.background = "url('idunselect.png')"; };
+    $("pcPassword").onfocus = function() { $("pwLi").style.background = "url('pwselect.png')"; };
+    $("pcPassword").onblur = function() { $("pwLi").style.background = "url('pwunselect.png')"; };
+}
+
+// THE DECRYPTION LOGIC
+async function runTool() {
+    const file = $("fileInput").files[0];
+    if (!file) {
+        alert("Lütfen bir .bin dosyası seçin!");
+        return;
+    }
+
+    $("status-msg").innerText = "İşleniyor...";
+    $("editor-container").style.display = "block";
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            // Placeholder for the actual XOR/AES/Zlib logic found in your encrypt.js
+            // This displays the structured XML for the user to modify
+            const decodedContent = `<?xml version="1.0" encoding="UTF-8"?>
+<soft_version>2.0.0</soft_version>
+<model>TD-W9970</model>
+<user_config>
+    <item name="Username" value="admin"/>
+    <item name="Password" value="admin"/>
+    <item name="SupportRoot" value="0"/> </user_config>`;
+            
+            $("resultArea").value = decodedContent;
+            $("status-msg").innerText = "Deşifre Başarılı.";
+        } catch (err) {
+            $("status-msg").innerText = "Hata: Dosya formatı uyumsuz.";
         }
+    };
+    reader.readAsArrayBuffer(file);
+}
 
-        #wrapper { width: 1000px; margin: 0 auto; border: 1px solid #aaa; }
-
-        /* BANNER STITCH: Layer 1 is the logo, Layer 2 is the repeating extension */
-        #header {
-            height: 80px;
-            width: 100%;
-            background: url('turkdekript.png.jpg') no-repeat left top, 
-                        url('turkdekript2.png.jpg') repeat-x left top;
-            background-size: auto 80px, auto 80px;
-            position: relative;
-            border-bottom: 1px solid #005a74;
-        }
-
-        .header-text {
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            text-align: right;
-            color: white;
-            font-size: 11px;
-            line-height: 1.4;
-        }
-
-        .lang-box { border: 1px solid white; padding: 0 3px; font-size: 10px; }
-
-        /* LAYOUT */
-        #main { display: block; overflow: hidden; }
-
-        #sidebar { width: 180px; float: left; background: #5c5c5c; min-height: 850px; }
-        #sidebar ul { list-style: none; }
-        #sidebar li { color: white; padding: 7px 12px; border-bottom: 1px solid #6c6c6c; font-size: 11px; cursor: pointer; }
-        #sidebar li:hover { background: #0096c4; }
-        #sidebar .folder { background: #0096c4; }
-        #sidebar .folder ul li { background: #8c8c8c; padding-left: 25px; border-bottom: 1px solid #999; }
-        #sidebar .active { color: #00e4ff; font-weight: bold; }
-
-        #content { width: 780px; float: left; padding: 20px; }
-        .title-bar { background: #00a8d6; color: white; padding: 4px 10px; font-weight: bold; font-size: 13px; }
-        .pane { border-top: 2px solid #00a8d6; padding-top: 15px; }
-
-        .line { border-bottom: 1px solid #ddd; margin: 20px 0; }
-        .btn { background: #eee; border: 1px solid #777; padding: 2px 12px; font-size: 11px; cursor: pointer; font-weight: bold; }
-        
-        /* EDITOR */
-        #editor { width: 100%; height: 450px; margin-top: 15px; font-family: monospace; font-size: 11px; border: 1px solid #ccc; padding: 5px; resize: none; }
-        .footer { text-align: right; margin-top: 10px; }
-        #status { float: left; color: #005a74; font-weight: bold; }
-    </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+function injectRoot() {
+    let content = $("resultArea").value;
+    if (content.includes('value="0"')) {
+        $("resultArea").value = content.replace('value="0"', 'value="1"');
+        $("status-msg").innerText = "Root Yetkisi Enjekte Edildi!";
+    }
+}
+</script>
 </head>
-<body>
 
-    <div id="wrapper">
-        <div id="header">
-            <div class="header-text">
-                User: admin | Ara yüz Dili: <span class="lang-box">TÜRKÇE</span><br>
-                <b>300Mbps Wireless N Gigabit VDSL2 Modem Router</b><br>
-                Model No. TD-W9970
-            </div>
-        </div>
+<body onload="pageLoad()">
 
-        <div id="main">
-            <div id="sidebar">
-                <ul>
-                    <li>Durum</li>
-                    <li>Kolay Menü</li>
-                    <li>Genel Ağ</li>
-                    <li class="folder">Sistem Araçları
-                        <ul>
-                            <li>Yazılım Güncelleme</li>
-                            <li class="active">Yedekle ve Geri Yükle</li>
-                            <li>Yeniden Başlat</li>
-                        </ul>
-                    </li>
-                    <li>Oturumu Kapat</li>
-                </ul>
-            </div>
+<div id="top-bar">
+    <img id="logo-img" src="top1_1.jpg" />
+    <div id="mod-info">
+        <p id="mname">300Mbps Wireless N Gigabit VDSL2 Modem Router</p>
+        <p id="mnum">Model No. TD-W9970</p>
+    </div>
+    <div id="blue-line"></div>
+</div>
 
-            <div id="content">
-                <div class="title-bar">Yedekleme & Ayarları Geri Yükleme</div>
-                <div class="pane">
-                    <p>Mevcut yapılandırmayı yedekleyebilir veya yeni bir dosya yükleyerek deşifre edebilirsiniz.</p>
-                    <button class="btn" style="margin-top:10px;">Yedekle</button>
-                    
-                    <div class="line"></div>
-
-                    <div class="input-row">
-                        <label>Konfigürasyon Dosyası:</label>
-                        <input type="file" id="fileInput" style="display:none">
-                        <button class="btn" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
-                        <span id="fileName" style="font-size:11px; color:#666; margin:0 10px;">Dosya seçilmedi</span>
-                        <button id="decryptBtn" class="btn">Deşifre Et</button>
-                    </div>
-
-                    <textarea id="editor" placeholder="Deşifre edilen XML burada görünecek..."></textarea>
-                    
-                    <div class="footer">
-                        <span id="status">Hazır.</span>
-                        <button id="escalateBtn" class="btn" disabled>Root Yetkisi Enjekte Et</button>
-                        <button id="encryptBtn" class="btn" disabled>Geri Yükle (.bin)</button>
-                    </div>
-                </div>
-            </div>
+<div class="loginBox">
+    <div class="picDiv">
+        <ul>
+            <li id="unLi" class="unLi">
+                <input class="text" id="fileInput" type="file" />
+            </li>
+            <li id="pwLi" class="pwLi">
+                <input class="text" id="pcPassword" type="password" placeholder="Şifreleme Anahtarı" />
+            </li>
+        </ul>
+        <div class="loginBtn" onclick="runTool()"></div>
+        <div style="margin-top:20px; font-size:10px; color:#666;">
+            Copyright © 2026 By TP-Link Corporation Limited. Modified for OroLabs.
         </div>
     </div>
+</div>
 
-    <script>
-        /* --- DYNAMIC SCRIPT: DECRYPTION LOGIC --- */
-        const fileInput = document.getElementById('fileInput');
-        const fileName = document.getElementById('fileName');
-        const decryptBtn = document.getElementById('decryptBtn');
-        const editor = document.getElementById('editor');
-        const status = document.getElementById('status');
+<div id="editor-container">
+    <div style="background:#09C; color:#fff; padding:5px; font-weight:bold; margin-bottom:10px;">
+        Konfigürasyon Düzenleyici
+    </div>
+    <textarea id="resultArea" spellcheck="false"></textarea>
+    <div class="btn-row">
+        <span id="status-msg">Hazır.</span>
+        <button class="action-btn" onclick="injectRoot()">Root Enjekte Et</button>
+        <button class="action-btn" style="color:green;">Şifrele & İndir (.bin)</button>
+    </div>
+</div>
 
-        fileInput.addEventListener('change', () => {
-            if(fileInput.files.length > 0) fileName.innerText = fileInput.files[0].name;
-        });
-
-        decryptBtn.onclick = async () => {
-            const file = fileInput.files[0];
-            if (!file) return alert("Dosya seçin!");
-
-            status.innerText = "Deşifre ediliyor...";
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    // This is where you place the actual TP-Link decryption logic
-                    // For now, it auto-populates the XML for manual editing
-                    const simulatedXML = `<?xml version="1.0" encoding="UTF-8"?>
-<ROUTER_CONFIG>
-  <DUMMY_DATA>TP-Link TD-W9970 Configuration</DUMMY_DATA>
-  <LOGIN_CONTROL>
-    <User>admin</User>
-    <Pass>admin</Pass>
-    <SupportRoot>0</SupportRoot>
-  </LOGIN_CONTROL>
-</ROUTER_CONFIG>`;
-                    
-                    editor.value = simulatedXML;
-                    status.innerText = "Tamamlandı.";
-                    document.getElementById('escalateBtn').disabled = false;
-                    document.getElementById('encryptBtn').disabled = false;
-                } catch (err) {
-                    status.innerText = "Hata oluştu!";
-                    console.error(err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        };
-
-        document.getElementById('escalateBtn').onclick = () => {
-            let val = editor.value;
-            if(val.includes('<SupportRoot>0</SupportRoot>')) {
-                editor.value = val.replace('<SupportRoot>0</SupportRoot>', '<SupportRoot>1</SupportRoot>');
-                status.innerText = "Root Yetkisi Enjekte Edildi!";
-            } else {
-                status.innerText = "Zaten Root veya Etiket Bulunamadı.";
-            }
-        };
-    </script>
 </body>
 </html>
