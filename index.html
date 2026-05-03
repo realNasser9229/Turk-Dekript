@@ -9,23 +9,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-    <div class="header-container">
-        <div class="logo-side">
-            <img src="turkdekript.png.jpg" alt="Türk Dekript" class="brand-logo" />
+    <header class="main-banner">
+        <div class="logo-wrapper">
+            <img src="turkdekript.png.jpg" alt="Logo" class="brand-logo" />
         </div>
-        <div class="info-side">
-            <div class="user-lang">
-                User: <span class="bold">admin</span> | Ara yüz Dili: 
-                <select class="lang-dropdown"><option>TÜRKÇE</option></select>
-            </div>
-            <div class="device-text">300Mbps Wireless N Gigabit VDSL2 Modem Router</div>
-            <div class="model-text">Model No. TD-W9970</div>
+        <div class="banner-info">
+            <div class="user-status">User: admin | Ara yüz Dili: <select><option>TÜRKÇE</option></select></div>
+            <div class="device-name">300Mbps Wireless N Gigabit VDSL2 Modem Router</div>
+            <div class="model-line">Model No. TD-W9970</div>
         </div>
-    </div>
+    </header>
 
-    <div class="main-layout">
-        <aside class="sidebar">
-            <ul class="nav-list">
+    <div class="layout-container">
+        <aside class="side-nav">
+            <ul class="nav-menu">
                 <li><a href="#">Durum</a></li>
                 <li><a href="#">Kolay Menü</a></li>
                 <li><a href="#">Genel Ağ</a></li>
@@ -37,12 +34,12 @@
                 <li><a href="#">QoS</a></li>
                 <li><a href="#">Dinamik DNS</a></li>
                 <li><a href="#">Tanılama</a></li>
-                <li class="active-parent">
-                    <a href="#">Sistem Araçları</a>
+                <li class="active-group">
+                    <a href="#" class="main-link">Sistem Araçları</a>
                     <ul class="sub-nav">
                         <li><a href="#">Yönetim Kontrolü</a></li>
                         <li><a href="#">SNMP Ayarları</a></li>
-                        <li><a href="#" class="active-link">Yedekle ve Geri Yükle</a></li>
+                        <li><a href="#" class="active-sub">Yedekle ve Geri Yükle</a></li>
                         <li><a href="#">Fabrika Ayarları</a></li>
                         <li><a href="#">Yeniden Başlat</a></li>
                         <li><a href="#">İstatistikler</a></li>
@@ -53,51 +50,40 @@
             </ul>
         </aside>
 
-        <main class="content-panel">
-            <div class="blue-header">
+        <main class="main-content">
+            <div class="section-title">
                 <h2>Yedekleme & Ayarları Geri Yükleme</h2>
             </div>
             
-            <div class="inner-content">
-                <p class="instruction-text">Mevcut ayarları PC'nizde yerel alana bir bin dosyası olarak yedeklemek için YEDEKLE düğmesine basınız. Ayarlarınızı yeniden yapılandırmadan veya FW güncelleme yapmadan cihazınızın yedeklerini almanız önerilir.</p>
+            <div class="work-area">
+                <p class="desc">Mevcut ayarları yedeklemek için <b>Yedekle</b> düğmesine basın. Yeni yapılandırma yüklemek için dosyayı seçip <b>Dekript</b> edin.</p>
                 
-                <div class="button-row">
-                    <button class="tp-btn">Yedekle</button>
+                <div class="row">
+                    <button class="native-btn">Yedekle</button>
                 </div>
 
-                <div class="hr-divider"></div>
+                <div class="divider"></div>
 
-                <p class="instruction-text">Daha önce kayıt etmiş olduğunuz bir bin dosyasını geri yükleyebilirsiniz.</p>
-                
-                <div class="upload-row">
-                    <label class="label">Konfigürasyon Dosyası:</label>
-                    <input type="file" id="fileInput" accept=".bin" style="display:none" onchange="document.getElementById('file-path').innerText = this.files[0].name" />
-                    <button class="tp-btn" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
-                    <span id="file-path" class="path-text">Dosya seçilmedi</span>
-                    <button id="decryptBtn" class="tp-btn">Geri Yükle</button>
+                <div class="row">
+                    <label>Dosya Seç:</label>
+                    <input type="file" id="fileInput" accept=".bin" style="display:none" onchange="document.getElementById('file-name').innerText = this.files[0].name" />
+                    <button class="native-btn" onclick="document.getElementById('fileInput').click()">Gözat...</button>
+                    <span id="file-name">Dosya seçilmedi</span>
+                    <button id="decryptBtn" class="native-btn">Dekript Et</button>
                 </div>
 
-                <div class="hr-divider"></div>
+                <div class="divider"></div>
 
-                <div class="escalator-box">
-                    <p class="instruction-text"><b>Türk Dekript Analiz Paneli:</b></p>
-                    <textarea id="resultArea" spellcheck="false" placeholder="XML verisi deşifre edildikten sonra burada görünecek..."></textarea>
-                    
-                    <div class="action-footer">
-                        <span id="status" class="status-msg">Hazır.</span>
-                        <div class="btn-group">
-                            <button id="escalateBtn" class="tp-btn" disabled>Root Yetkisi Enjekte Et</button>
-                            <button id="encryptBtn" class="tp-btn" disabled>Escalated .bin İndir</button>
-                        </div>
+                <div class="editor-zone">
+                    <div class="zone-header">
+                        <span>XML Verisi & Root Enjektör</span>
+                        <div id="status" class="status-box">Bekliyor...</div>
                     </div>
-                </div>
-
-                <div class="notes">
-                    <p><b>Not:</b></p>
-                    <ol>
-                        <li>Cihaz mevcut ayarları, yüklemekte olduğunuz dosya tarafından değiştirilecektir. Hatalı uygulama cihazı yönetilemez hale getirebilir.</li>
-                        <li>Yeniden yükleme işlemi 30 saniye kadar devam edecektir, ardından cihaz otomatik olarak yeniden başlayacaktır. Cihazın zarar görmemesi için işlem süresince elektriğinin kesilmediğine emin olunuz.</li>
-                    </ol>
+                    <textarea id="resultArea" spellcheck="false"></textarea>
+                    <div class="zone-footer">
+                        <button id="escalateBtn" class="native-btn" disabled>Root Yetkisi Enjekte Et</button>
+                        <button id="encryptBtn" class="native-btn" disabled>Modlu .bin İndir</button>
+                    </div>
                 </div>
             </div>
         </main>
