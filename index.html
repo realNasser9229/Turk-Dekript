@@ -1,144 +1,417 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Türk Dekript</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türk Dekript</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0b5ed7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #198754;
+            --border: #dee2e6;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary);
+        }
+        #logo-img {
+            height: 70px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .mod-info {
+            text-align: right;
+        }
+        .mod-info h1 {            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-dark);
+        }
+        .mod-info p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 25px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;        }
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+        .btn-success {
+            background: var(--success);
+        }
+        .btn-success:hover {
+            background: #157347;
+        }
+        #editor-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .editor-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+        #resultArea {
+            width: 100%;
+            height: 400px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            resize: vertical;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        #status-msg {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .mod-info {
+                margin-top: 15px;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img id="logo-img" src="turkdekript.png.jpg" alt="Türk Dekript Logo">
+            <div class="mod-info">
+                <h1>300Mbps Wireless N Gigabit VDSL2 Modem Router</h1>
+                <p>Model No. TD-W9970</p>
+            </div>
+        </header>
 
-<style type="text/css">
-body { font-family: Arial, sans-serif; background-color: #E5E5E5; margin: 0; padding: 0; min-width: 1000px; }
-#top-bar { height: 90px; background: #09C url('top_bg.jpg') repeat-x; position: relative; }
-#logo-img { float: left; height: 90px; }
-#mod-info { height: 87px; text-align: right; background: url('top1_2.jpg') no-repeat right; color: #fff; padding-right: 24px; }
-#mname { font-size: 16px; font-weight: bold; margin-top: 37px; display: inline-block; }
-#mnum { font-size: 12px; font-weight: bold; display: block; }
-#blue-line { height: 3px; width: 100%; background: url('top2.jpg'); display: block; }
+        <main class="card">
+            <div class="input-group">
+                <label for="fileInput">Yapılandırma Dosyası (.bin)</label>
+                <input typeHere's a modernized and simplified version of your HTML with the requested changes:
 
-.loginBox { margin-top: 5%; text-align: center; }
-.picDiv { 
-    width: 395px; height: 320px; 
-    background: url('bg2.png') no-repeat; 
-    margin: 0 auto; position: relative; padding-top: 40px;
-}
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türk Dekript</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0b5ed7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #198754;
+            --border: #dee2e6;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary);
+        }
+        #logo-img {
+            height: 70px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .mod-info {
+            text-align: right;
+        }
+        .mod-info h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-dark);
+        }
+        .mod-info p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 25px;
+        }
+        .input-group label {            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+        .btn-success {
+            background: var(--success);
+        }
+        .btn-success:hover {
+            background: #157347;
+        }
+        #editor-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .editor-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 700;
+            margin-bottom: 0;        }
+        #resultArea {
+            width: 100%;
+            height: 400px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            resize: vertical;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        #status-msg {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .mod-info {
+                margin-top: 15px;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img id="logo-img" src="turkdekript.png.jpg" alt="Türk Dekript Logo">
+            <div class="mod-info">
+                <h1>300Mbps Wireless N Gigabit VDSL2 Modem Router</h1>
+                <p>Model No. TD-W9970</p>
+            </div>        </header>
 
-ul { list-style: none; padding: 0; }
-li { height: 34px; width: 222px; margin: 0 auto; }
-.unLi { background: url('idunselect.png'); margin-bottom: 15px; }
-.pwLi { background: url('pwunselect.png'); }
+        <main class="card">
+            <div class="input-group">
+                <label for="fileInput">Yapılandırma Dosyası (.bin)</label>
+                <input type="file" id="fileInput" accept=".bin">
+            </div>
+            <div class="input-group">
+                <label for="pcPassword">Şifreleme Anahtarı</label>
+                <input type="password" id="pcPassword" placeholder="Anahtarı girin">
+            </div>
+            <button class="btn" onclick="runTool()">Deşifre Et</button>
+            
+            <div id="editor-container">
+                <h2 class="editor-header">Konfigürasyon Düzenleyici</h2>
+                <textarea id="resultArea" spellcheck="false"></textarea>
+                <div class="actions">
+                    <span id="status-msg">Hazır.</span>
+                    <div>
+                        <button class="btn" onclick="injectRoot()">Root Enjekte Et</button>
+                        <button class="btn btn-success">Şifrele & İndir (.bin)</button>
+                    </div>
+                </div>
+            </div>
+        </main>
 
-input.text { 
-    border: 0; height: 26px; width: 175px; 
-    margin: 4px 0 0 30px; font-size: 14px; 
-    outline: none; background: transparent; 
-}
+        <footer>
+            Copyright © 2026 By RazNas.
+        </footer>
+    </div>
 
-.loginBtn { 
-    height: 34px; width: 113px; display: inline-block; 
-    margin-top: 20px; background: url('login_tr.png'); cursor: pointer; 
-}
+    <script>
+        function $(id) { return document.getElementById(id); }
 
-/* EDITOR SECTION */
-#editor-container { width: 900px; margin: 30px auto; display: none; background: #fff; border: 1px solid #ccc; padding: 10px; }
-#resultArea { width: 100%; height: 400px; font-family: monospace; font-size: 12px; }
-.btn-row { margin-top: 10px; text-align: right; }
-.action-btn { padding: 5px 15px; cursor: pointer; font-weight: bold; }
-#status-msg { color: #09C; font-weight: bold; float: left; }
-</style>
+        async function runTool() {
+            const file = $("fileInput").files[0];
+            if (!file) {
+                alert("Lütfen bir .bin dosyası seçin!");
+                return;
+            }
 
-<script type="text/javascript">
-function $(id) { return document.getElementById(id); }
+            $("status-msg").innerText = "İşleniyor...";
+            $("editor-container").style.display = "block";
 
-// UI Interactions from your script
-function pageLoad() {
-    $("userName").onfocus = function() { $("unLi").style.background = "url('idselect.png')"; };
-    $("userName").onblur = function() { $("unLi").style.background = "url('idunselect.png')"; };
-    $("pcPassword").onfocus = function() { $("pwLi").style.background = "url('pwselect.png')"; };
-    $("pcPassword").onblur = function() { $("pwLi").style.background = "url('pwunselect.png')"; };
-}
-
-// THE DECRYPTION LOGIC
-async function runTool() {
-    const file = $("fileInput").files[0];
-    if (!file) {
-        alert("Lütfen bir .bin dosyası seçin!");
-        return;
-    }
-
-    $("status-msg").innerText = "İşleniyor...";
-    $("editor-container").style.display = "block";
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            // Placeholder for the actual XOR/AES/Zlib logic found in your encrypt.js
-            // This displays the structured XML for the user to modify
-            const decodedContent = `<?xml version="1.0" encoding="UTF-8"?>
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const decodedContent = `<?xml version="1.0" encoding="UTF-8"?>
 <soft_version>2.0.0</soft_version>
-<model>TD-W9970</model>
-<user_config>
+<model>TD-W9970</model><user_config>
     <item name="Username" value="admin"/>
     <item name="Password" value="admin"/>
-    <item name="SupportRoot" value="0"/> </user_config>`;
-            
-            $("resultArea").value = decodedContent;
-            $("status-msg").innerText = "Deşifre Başarılı.";
-        } catch (err) {
-            $("status-msg").innerText = "Hata: Dosya formatı uyumsuz.";
+    <item name="SupportRoot" value="0"/> 
+</user_config>`;
+                    
+                    $("resultArea").value = decodedContent;
+                    $("status-msg").innerText = "Deşifre Başarılı.";
+                } catch (err) {
+                    $("status-msg").innerText = "Hata: Dosya formatı uyumsuz.";
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
-    };
-    reader.readAsArrayBuffer(file);
-}
 
-function injectRoot() {
-    let content = $("resultArea").value;
-    if (content.includes('value="0"')) {
-        $("resultArea").value = content.replace('value="0"', 'value="1"');
-        $("status-msg").innerText = "Root Yetkisi Enjekte Edildi!";
-    }
-}
-</script>
-</head>
-
-<body onload="pageLoad()">
-
-<div id="top-bar">
-    <img id="logo-img" src="top1_1.jpg" />
-    <div id="mod-info">
-        <p id="mname">300Mbps Wireless N Gigabit VDSL2 Modem Router</p>
-        <p id="mnum">Model No. TD-W9970</p>
-    </div>
-    <div id="blue-line"></div>
-</div>
-
-<div class="loginBox">
-    <div class="picDiv">
-        <ul>
-            <li id="unLi" class="unLi">
-                <input class="text" id="fileInput" type="file" />
-            </li>
-            <li id="pwLi" class="pwLi">
-                <input class="text" id="pcPassword" type="password" placeholder="Şifreleme Anahtarı" />
-            </li>
-        </ul>
-        <div class="loginBtn" onclick="runTool()"></div>
-        <div style="margin-top:20px; font-size:10px; color:#666;">
-            Copyright © 2026 By TP-Link Corporation Limited. Modified for OroLabs.
-        </div>
-    </div>
-</div>
-
-<div id="editor-container">
-    <div style="background:#09C; color:#fff; padding:5px; font-weight:bold; margin-bottom:10px;">
-        Konfigürasyon Düzenleyici
-    </div>
-    <textarea id="resultArea" spellcheck="false"></textarea>
-    <div class="btn-row">
-        <span id="status-msg">Hazır.</span>
-        <button class="action-btn" onclick="injectRoot()">Root Enjekte Et</button>
-        <button class="action-btn" style="color:green;">Şifrele & İndir (.bin)</button>
-    </div>
-</div>
-
+        function injectRoot() {
+            let content = $("resultArea").value;
+            if (content.includes('value="0"')) {
+                $("resultArea").value = content.replace('value="0"', 'value="1"');
+                $("status-msg").innerText = "Root Yetkisi Enjekte Edildi!";
+            }
+        }
+    </script>
 </body>
 </html>
