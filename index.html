@@ -2,96 +2,80 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Türk Dekript - OroLabs</title>
+    <title>TD-W9970</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-
-    <header class="main-header">
-        <div class="banner-stitch">
-            <img src="turkdekript.png.jpg" class="banner-logo" alt="Logo" />
-            <div class="banner-extension">
-                <div class="header-text-overlay">
-                    <div class="top-row">User: admin | Ara yüz Dili: <span class="lang-tag">TÜRKÇE</span></div>
-                    <div class="mid-row">300Mbps Wireless N Gigabit VDSL2 Modem Router</div>
-                    <div class="bot-row">Model No. TD-W9970 | OroLabs Build</div>
+    <div id="desktop-wrapper">
+        <header class="header-full">
+            <div class="header-content">
+                <img src="turkdekript.png.jpg" class="main-logo" alt="Logo">
+                <div class="header-right">
+                    <div class="user-info">User: admin | Ara yüz Dili: <span class="lang-selector">TÜRKÇE</span></div>
+                    <div class="model-line">300Mbps Wireless N Gigabit VDSL2 Modem Router</div>
+                    <div class="model-sub">Model No. TD-W9970</div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <div class="wrapper">
-        <aside class="sidebar">
-            <nav>
-                <ul class="nav-menu">
+        <div class="main-layout">
+            <aside class="sidebar-fixed">
+                <ul class="nav">
                     <li><a href="#">Durum</a></li>
-                    <li><a href="#">Hızlı Kurulum</a></li>
+                    <li><a href="#">Kolay Menü</a></li>
                     <li><a href="#">Genel Ağ</a></li>
                     <li><a href="#">DHCP Sunucusu</a></li>
                     <li><a href="#">Kablosuz Ayarları</a></li>
-                    <li><a href="#">Güvenlik Ayarları</a></li>
-                    <li class="has-sub active">
-                        <a href="#" class="parent-link">Sistem Araçları</a>
-                        <ul class="sub-menu">
+                    <li class="active-folder">
+                        <a href="#">Sistem Araçları</a>
+                        <ul class="sub-nav">
                             <li><a href="#">Yazılım Güncelleme</a></li>
-                            <li><a href="#" class="active-item">Yedekle & Geri Yükle</a></li>
+                            <li><a href="#" class="active-link">Yedekle ve Geri Yükle</a></li>
                             <li><a href="#">Yeniden Başlat</a></li>
-                            <li><a href="#">Sistem Günlüğü</a></li>
                         </ul>
                     </li>
                     <li><a href="#">Oturumu Kapat</a></li>
                 </ul>
-            </nav>
-        </aside>
+            </aside>
 
-        <main class="main-content">
-            <div class="blue-title">
-                <h2>Yedekleme & Ayarları Geri Yükleme</h2>
-            </div>
-            
-            <div class="content-padding">
-                <p class="guide-text">Mevcut yapılandırmayı yedekleyin veya yeni bir <b>.bin</b> dosyası yükleyerek deşifre edin.</p>
-                
-                <div class="action-card">
-                    <div class="control-row">
-                        <button class="router-btn">Yedekle</button>
+            <main class="content-fixed">
+                <div class="blue-bar">
+                    <h2>Yedekleme & Ayarları Geri Yükleme</h2>
+                </div>
+                <div class="content-body">
+                    <p class="instruction">Mevcut ayarları yedeklemek veya modlu bir yapılandırma yüklemek için aşağıdaki araçları kullanın.</p>
+                    
+                    <div class="action-row">
+                        <button class="tp-button">Yedekle</button>
                     </div>
-                    <hr class="router-hr" />
-                    <div class="control-row">
+
+                    <div class="hr-rule"></div>
+
+                    <div class="action-row">
                         <label>Dosya Seç:</label>
-                        <input type="file" id="fileInput" accept=".bin" class="hidden-input" onchange="document.getElementById('fn').innerText = this.files[0].name" />
-                        <button class="router-btn" onclick="document.getElementById('fileInput').click()">Gözat</button>
-                        <span id="fn" class="file-label">Seçilmedi</span>
-                        <button id="decryptBtn" class="router-btn">Deşifre Et</button>
+                        <input type="file" id="fileInput" style="display:none" onchange="document.getElementById('fn').innerText = this.files[0].name" />
+                        <button class="tp-button" onclick="document.getElementById('fileInput').click()">Gözat...</button>
+                        <span id="fn" class="path-text">Dosya seçilmedi</span>
+                        <button id="decryptBtn" class="tp-button">Deşifre Et</button>
                     </div>
-                </div>
 
-                <div class="analyzer-box">
-                    <div class="analyzer-header">
-                        <span>XML Gelişmiş Düzenleyici</span>
-                        <span id="status" class="status-indicator">Bekliyor...</span>
-                    </div>
-                    <textarea id="resultArea" spellcheck="false" placeholder="XML verisi deşifre edildikten sonra burada görünecek..."></textarea>
-                    <div class="analyzer-footer">
-                        <button id="escalateBtn" class="router-btn danger" disabled>Root Yetkisi Enjekte Et</button>
-                        <button id="encryptBtn" class="router-btn success" disabled>Şifrele & İndir</button>
+                    <div class="analyzer-zone">
+                        <div class="zone-top">
+                            <b>OroLabs XML Editor</b>
+                            <span id="status">Bekleniyor...</span>
+                        </div>
+                        <textarea id="resultArea" spellcheck="false"></textarea>
+                        <div class="zone-bottom">
+                            <button id="escalateBtn" class="tp-button" disabled>Root Yetkisi Enjekte Et</button>
+                            <button id="encryptBtn" class="tp-button" disabled>Modlu .bin İndir</button>
+                        </div>
                     </div>
                 </div>
-
-                <div class="footer-notes">
-                    <b>Not:</b>
-                    <ol>
-                        <li>İşlem sırasında cihazı kapatmayın.</li>
-                        <li>Yanlış yapılandırma bağlantı hatalarına yol açabilir.</li>
-                    </ol>
-                </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
-
     <script src="decryptor.js"></script>
 </body>
 </html>
