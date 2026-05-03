@@ -8,72 +8,65 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-    <div id="desktop-wrapper">
-        <header class="header-full">
-            <div class="header-content">
-                <img src="turkdekript.png.jpg" class="main-logo" alt="Logo">
-                <div class="header-right">
-                    <div class="user-info">User: admin | Ara yüz Dili: <span class="lang-selector">TÜRKÇE</span></div>
-                    <div class="model-line">300Mbps Wireless N Gigabit VDSL2 Modem Router</div>
-                    <div class="model-sub">Model No. TD-W9970</div>
+    <div id="wrapper">
+        <div id="header">
+            <div class="banner-left">
+                <img src="turkdekript.png.jpg" alt="Banner Left">
+            </div>
+            <div class="banner-right">
+                <div class="header-info">
+                    User: admin | Ara yüz Dili: <span class="lang">TÜRKÇE</span><br>
+                    <b>300Mbps Wireless N Gigabit VDSL2 Modem Router</b><br>
+                    Model No. TD-W9970
                 </div>
             </div>
-        </header>
+        </div>
 
-        <div class="main-layout">
-            <aside class="sidebar-fixed">
+        <div id="main-container">
+            <div id="sidebar">
                 <ul class="nav">
-                    <li><a href="#">Durum</a></li>
-                    <li><a href="#">Kolay Menü</a></li>
-                    <li><a href="#">Genel Ağ</a></li>
-                    <li><a href="#">DHCP Sunucusu</a></li>
-                    <li><a href="#">Kablosuz Ayarları</a></li>
-                    <li class="active-folder">
-                        <a href="#">Sistem Araçları</a>
-                        <ul class="sub-nav">
-                            <li><a href="#">Yazılım Güncelleme</a></li>
-                            <li><a href="#" class="active-link">Yedekle ve Geri Yükle</a></li>
-                            <li><a href="#">Yeniden Başlat</a></li>
+                    <li>Durum</li>
+                    <li>Kolay Menü</li>
+                    <li>Genel Ağ</li>
+                    <li class="active-folder">Sistem Araçları
+                        <ul>
+                            <li>Yazılım Güncelleme</li>
+                            <li class="active-link">Yedekle ve Geri Yükle</li>
                         </ul>
                     </li>
-                    <li><a href="#">Oturumu Kapat</a></li>
+                    <li>Oturumu Kapat</li>
                 </ul>
-            </aside>
+            </div>
 
-            <main class="content-fixed">
-                <div class="blue-bar">
-                    <h2>Yedekleme & Ayarları Geri Yükleme</h2>
-                </div>
-                <div class="content-body">
-                    <p class="instruction">Mevcut ayarları yedeklemek veya modlu bir yapılandırma yüklemek için aşağıdaki araçları kullanın.</p>
+            <div id="content">
+                <div class="blue-header">Yedekleme & Ayarları Geri Yükleme</div>
+                <div class="main-body">
+                    <p>Mevcut ayarları yedeklemek için <b>Yedekle</b> butonuna tıklayın.</p>
+                    <button class="tp-btn">Yedekle</button>
                     
-                    <div class="action-row">
-                        <button class="tp-button">Yedekle</button>
+                    <div class="line"></div>
+
+                    <div class="tool-row">
+                        <label>Dosya:</label>
+                        <input type="file" id="fileInput" style="display:none" />
+                        <button class="tp-btn" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
+                        <span id="fn">Seçilmedi</span>
+                        <button id="decryptBtn" class="tp-btn">Deşifre Et</button>
                     </div>
 
-                    <div class="hr-rule"></div>
-
-                    <div class="action-row">
-                        <label>Dosya Seç:</label>
-                        <input type="file" id="fileInput" style="display:none" onchange="document.getElementById('fn').innerText = this.files[0].name" />
-                        <button class="tp-button" onclick="document.getElementById('fileInput').click()">Gözat...</button>
-                        <span id="fn" class="path-text">Dosya seçilmedi</span>
-                        <button id="decryptBtn" class="tp-button">Deşifre Et</button>
-                    </div>
-
-                    <div class="analyzer-zone">
-                        <div class="zone-top">
-                            <b>OroLabs XML Editor</b>
+                    <div class="editor-area">
+                        <div class="editor-label">
+                            <b>OroLabs Dynamic Decryptor</b>
                             <span id="status">Bekleniyor...</span>
                         </div>
                         <textarea id="resultArea" spellcheck="false"></textarea>
-                        <div class="zone-bottom">
-                            <button id="escalateBtn" class="tp-button" disabled>Root Yetkisi Enjekte Et</button>
-                            <button id="encryptBtn" class="tp-button" disabled>Modlu .bin İndir</button>
+                        <div class="editor-footer">
+                            <button id="escalateBtn" class="tp-btn" disabled>Root Yetkisi Enjekte Et</button>
+                            <button id="encryptBtn" class="tp-btn" disabled>Modlu .bin İndir</button>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
     <script src="decryptor.js"></script>
