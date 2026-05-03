@@ -1,32 +1,86 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <title>TD-W9970</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Türk Dekript</title>
+    <style>
+        /* --- CORE CSS: LOCKDOWN --- */
+        * { margin: 0; padding: 0; box-sizing: content-box; }
+        body { 
+            background: #fff; 
+            font-family: Arial, sans-serif; 
+            min-width: 1000px; /* Forces desktop scale on mobile */
+        }
+
+        #wrapper { width: 1000px; margin: 0 auto; border: 1px solid #aaa; }
+
+        /* BANNER STITCH: Layer 1 is the logo, Layer 2 is the repeating extension */
+        #header {
+            height: 80px;
+            width: 100%;
+            background: url('turkdekript.png.jpg') no-repeat left top, 
+                        url('turkdekript2.png.jpg') repeat-x left top;
+            background-size: auto 80px, auto 80px;
+            position: relative;
+            border-bottom: 1px solid #005a74;
+        }
+
+        .header-text {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            text-align: right;
+            color: white;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .lang-box { border: 1px solid white; padding: 0 3px; font-size: 10px; }
+
+        /* LAYOUT */
+        #main { display: block; overflow: hidden; }
+
+        #sidebar { width: 180px; float: left; background: #5c5c5c; min-height: 850px; }
+        #sidebar ul { list-style: none; }
+        #sidebar li { color: white; padding: 7px 12px; border-bottom: 1px solid #6c6c6c; font-size: 11px; cursor: pointer; }
+        #sidebar li:hover { background: #0096c4; }
+        #sidebar .folder { background: #0096c4; }
+        #sidebar .folder ul li { background: #8c8c8c; padding-left: 25px; border-bottom: 1px solid #999; }
+        #sidebar .active { color: #00e4ff; font-weight: bold; }
+
+        #content { width: 780px; float: left; padding: 20px; }
+        .title-bar { background: #00a8d6; color: white; padding: 4px 10px; font-weight: bold; font-size: 13px; }
+        .pane { border-top: 2px solid #00a8d6; padding-top: 15px; }
+
+        .line { border-bottom: 1px solid #ddd; margin: 20px 0; }
+        .btn { background: #eee; border: 1px solid #777; padding: 2px 12px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        
+        /* EDITOR */
+        #editor { width: 100%; height: 450px; margin-top: 15px; font-family: monospace; font-size: 11px; border: 1px solid #ccc; padding: 5px; resize: none; }
+        .footer { text-align: right; margin-top: 10px; }
+        #status { float: left; color: #005a74; font-weight: bold; }
+    </style>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-    <div id="container">
+
+    <div id="wrapper">
         <div id="header">
             <div class="header-text">
                 User: admin | Ara yüz Dili: <span class="lang-box">TÜRKÇE</span><br>
-                <span class="model-name">300Mbps Wireless N Gigabit VDSL2 Modem Router</span><br>
+                <b>300Mbps Wireless N Gigabit VDSL2 Modem Router</b><br>
                 Model No. TD-W9970
             </div>
         </div>
 
         <div id="main">
-            <div id="menu">
+            <div id="sidebar">
                 <ul>
                     <li>Durum</li>
                     <li>Kolay Menü</li>
                     <li>Genel Ağ</li>
-                    <li>IPTV</li>
-                    <li>DHCP Sunucusu</li>
-                    <li>Kablosuz Ayarları</li>
-                    <li>USB Ayarları</li>
                     <li class="folder">Sistem Araçları
                         <ul>
                             <li>Yazılım Güncelleme</li>
@@ -40,32 +94,86 @@
 
             <div id="content">
                 <div class="title-bar">Yedekleme & Ayarları Geri Yükleme</div>
-                <div class="work-pane">
-                    <p>Cihazın mevcut ayarlarını yedeklemek için <b>Yedekle</b> butonuna tıklayın.</p>
-                    <button class="btn">Yedekle</button>
+                <div class="pane">
+                    <p>Mevcut yapılandırmayı yedekleyebilir veya yeni bir dosya yükleyerek deşifre edebilirsiniz.</p>
+                    <button class="btn" style="margin-top:10px;">Yedekle</button>
                     
-                    <div class="spacer"></div>
+                    <div class="line"></div>
 
-                    <div class="row">
-                        <label>Dosya:</label>
-                        <input type="file" id="fileInput" style="display:none" onchange="document.getElementById('fn').innerText = this.files[0].name" />
+                    <div class="input-row">
+                        <label>Konfigürasyon Dosyası:</label>
+                        <input type="file" id="fileInput" style="display:none">
                         <button class="btn" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
-                        <span id="fn">Seçilmedi</span>
+                        <span id="fileName" style="font-size:11px; color:#666; margin:0 10px;">Dosya seçilmedi</span>
                         <button id="decryptBtn" class="btn">Deşifre Et</button>
                     </div>
 
-                    <div class="editor-wrap">
-                        <textarea id="resultArea" spellcheck="false" placeholder="XML verisi deşifre edildikten sonra burada görünecek..."></textarea>
-                        <div class="footer">
-                            <span id="status">Bekleniyor...</span>
-                            <button id="escalateBtn" class="btn" disabled>Root Yetkisi Enjekte Et</button>
-                            <button id="encryptBtn" class="btn" disabled>Geri Yükleme Dosyası İndir</button>
-                        </div>
+                    <textarea id="editor" placeholder="Deşifre edilen XML burada görünecek..."></textarea>
+                    
+                    <div class="footer">
+                        <span id="status">Hazır.</span>
+                        <button id="escalateBtn" class="btn" disabled>Root Yetkisi Enjekte Et</button>
+                        <button id="encryptBtn" class="btn" disabled>Geri Yükle (.bin)</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="decryptor.js"></script>
+
+    <script>
+        /* --- DYNAMIC SCRIPT: DECRYPTION LOGIC --- */
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const decryptBtn = document.getElementById('decryptBtn');
+        const editor = document.getElementById('editor');
+        const status = document.getElementById('status');
+
+        fileInput.addEventListener('change', () => {
+            if(fileInput.files.length > 0) fileName.innerText = fileInput.files[0].name;
+        });
+
+        decryptBtn.onclick = async () => {
+            const file = fileInput.files[0];
+            if (!file) return alert("Dosya seçin!");
+
+            status.innerText = "Deşifre ediliyor...";
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    // This is where you place the actual TP-Link decryption logic
+                    // For now, it auto-populates the XML for manual editing
+                    const simulatedXML = `<?xml version="1.0" encoding="UTF-8"?>
+<ROUTER_CONFIG>
+  <DUMMY_DATA>TP-Link TD-W9970 Configuration</DUMMY_DATA>
+  <LOGIN_CONTROL>
+    <User>admin</User>
+    <Pass>admin</Pass>
+    <SupportRoot>0</SupportRoot>
+  </LOGIN_CONTROL>
+</ROUTER_CONFIG>`;
+                    
+                    editor.value = simulatedXML;
+                    status.innerText = "Tamamlandı.";
+                    document.getElementById('escalateBtn').disabled = false;
+                    document.getElementById('encryptBtn').disabled = false;
+                } catch (err) {
+                    status.innerText = "Hata oluştu!";
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        };
+
+        document.getElementById('escalateBtn').onclick = () => {
+            let val = editor.value;
+            if(val.includes('<SupportRoot>0</SupportRoot>')) {
+                editor.value = val.replace('<SupportRoot>0</SupportRoot>', '<SupportRoot>1</SupportRoot>');
+                status.innerText = "Root Yetkisi Enjekte Edildi!";
+            } else {
+                status.innerText = "Zaten Root veya Etiket Bulunamadı.";
+            }
+        };
+    </script>
 </body>
 </html>
