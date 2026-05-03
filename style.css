@@ -1,120 +1,40 @@
-/* RESET */
-* { margin: 0; padding: 0; box-sizing: content-box; }
+* { margin: 0; padding: 0; }
+body { background: #fff; font-family: Arial; min-width: 1000px; }
 
-body {
-    background-color: #fff;
-    font-family: Arial, sans-serif;
-    min-width: 1000px; /* Forces the browser to keep the width wide */
-}
+#wrapper { width: 1000px; margin: 0 auto; border: 1px solid #ccc; }
 
-#desktop-wrapper {
-    width: 1000px; /* Locked width to match router firmware UI */
-    margin: 0 auto;
-}
-
-/* --- THE BANNER EXTENSION --- */
-.header-full {
+/* --- THE 1:1 BANNER FIX --- */
+#header {
     height: 80px;
     width: 100%;
-    /* turkdekript2 is the extension background */
-    background: url('turkdekript2.png.jpg') repeat-x;
-    background-size: contain;
-    border-bottom: 1px solid #005a74;
-}
-
-.header-content {
     display: block;
-    position: relative;
-    height: 80px;
-}
-
-.main-logo {
-    position: absolute;
-    left: 20px;
-    top: 15px;
-    height: 45px;
-}
-
-.header-right {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    text-align: right;
-    color: white;
-}
-
-.user-info { font-size: 10px; margin-bottom: 5px; }
-.model-line { font-weight: bold; font-size: 12px; }
-.model-sub { font-size: 10px; margin-top: 2px; }
-
-/* --- FIXED LAYOUT --- */
-.main-layout {
-    display: block;
+    background: url('turkdekript2.png.jpg') repeat-x; /* The extension */
+    background-size: auto 80px;
     overflow: hidden;
 }
 
-.sidebar-fixed {
-    width: 180px;
-    float: left;
-    background-color: #5c5c5c;
-    min-height: 900px;
-}
+.banner-left { float: left; height: 80px; }
+.banner-left img { height: 80px; width: auto; display: block; }
 
-.nav { list-style: none; }
-.nav li a {
-    display: block;
-    padding: 8px 12px;
-    color: #fff;
-    text-decoration: none;
-    border-bottom: 1px solid #6c6c6c;
-    font-size: 11px;
-}
+.banner-right { float: right; color: white; text-align: right; padding: 10px 20px; }
+.header-info { font-size: 11px; line-height: 1.4; }
 
-.nav li a:hover { background-color: #0096c4; }
-.active-folder > a { background-color: #0096c4; }
+/* --- LAYOUT --- */
+#main-container { display: block; overflow: hidden; border-top: 1px solid #005a74; }
 
-.sub-nav { background-color: #8c8c8c; list-style: none; }
-.sub-nav li a { padding-left: 25px; font-size: 10px; }
-.active-link { color: #00e4ff !important; font-weight: bold; }
+#sidebar { width: 180px; float: left; background: #5c5c5c; min-height: 800px; }
+.nav { list-style: none; color: white; font-size: 11px; }
+.nav li { padding: 8px 12px; border-bottom: 1px solid #6c6c6c; cursor: pointer; }
+.nav li:hover, .active-folder { background: #0096c4; }
+.nav ul li { padding-left: 25px; background: #8c8c8c; border-bottom: 1px solid #999; }
+.active-link { color: #00e4ff; font-weight: bold; }
 
-/* CONTENT */
-.content-fixed {
-    width: 820px;
-    float: left;
-    padding: 20px;
-}
+#content { width: 780px; float: left; padding: 20px; }
+.blue-header { background: #00a8d6; color: white; padding: 4px 10px; font-weight: bold; font-size: 13px; }
+.main-body { border-top: 2px solid #00a8d6; padding-top: 15px; }
 
-.blue-bar {
-    background-color: #00a8d6;
-    padding: 4px 10px;
-    color: white;
-}
+.line { border-bottom: 1px solid #ddd; margin: 20px 0; }
+.tp-btn { background: #eee; border: 1px solid #777; padding: 2px 10px; font-size: 11px; cursor: pointer; }
 
-.blue-bar h2 { font-size: 13px; font-weight: bold; }
-
-.content-body {
-    border-top: 2px solid #00a8d6;
-    padding-top: 15px;
-}
-
-.hr-rule { border-bottom: 1px solid #b5c4d3; margin: 20px 0; }
-
-.tp-button {
-    background: linear-gradient(to bottom, #ffffff, #e6e6e6);
-    border: 1px solid #707070;
-    padding: 2px 12px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-#resultArea {
-    width: 100%;
-    height: 400px;
-    margin-top: 10px;
-    font-family: monospace;
-    font-size: 11px;
-    border: 1px solid #b5c4d3;
-}
-
-.analyzer-zone { margin-top: 20px; }
-.zone-bottom { margin-top: 10px; text-align: right; }
+#resultArea { width: 100%; height: 400px; font-family: monospace; font-size: 11px; margin-top: 10px; }
+.editor-footer { text-align: right; margin-top: 10px; }
