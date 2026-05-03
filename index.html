@@ -3,48 +3,80 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Türk Dekript</title>
+    <title>192.168.1.1 - Türk Dekript Yönetim Paneli</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-    <header>
-        <div class="banner-container">
-            <img src="turkdekript.png.jpg" alt="Logo" class="main-logo" />
-            <img src="turkdekript2.png.jpg" alt="Banner" class="banner-fill" />
+    <div class="header">
+        <div class="logo-area">
+            <h1>Türk Dekript <span>Modem Router</span></h1>
+            <div class="model-info">Model No. TD-W9970v3 / Universal</div>
         </div>
-        <div class="blue-bar">
-            <span>Konfigurasyon dosyasını deşifre et</span>
+        <div class="top-nav">
+            <span>Yazılım Versiyonu: 2.0.0 OroLabs Build</span> |
+            <span>Donanım Versiyonu: V3</span>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <div class="tp-container">
-            <div class="tp-header">Yönetim - Yedekle ve Geri Yükle</div>
-            <div class="tp-content">
-                <p>Config dosyasını (.bin) seçin ve şifresini çözerek içeriği görüntüleyin.</p>
+    <div class="main-layout">
+        <aside class="sidebar">
+            <ul class="menu">
+                <li><a href="#">Durum</a></li>
+                <li><a href="#">Hızlı Kurulum</a></li>
+                <li><a href="#">Ağ</a></li>
+                <li><a href="#">Kablosuz</a></li>
+                <li><a href="#">Güvenlik</a></li>
+                <li><a href="#">Ebeveyn Kontrolü</a></li>
+                <li><a href="#">Erişim Kontrolü</a></li>
+                <li class="menu-header">Sistem Araçları</li>
+                <li><a href="#">Zaman Ayarları</a></li>
+                <li><a href="#">Yazılım Güncelleme</a></li>
+                <li><a href="#" class="active">Yedekle & Geri Yükle</a></li>
+                <li><a href="#">Yeniden Başlat</a></li>
+                <li><a href="#">Sistem Günlüğü</a></li>
+            </ul>
+        </aside>
 
-                <div class="action-row">
-                    <input type="file" id="fileInput" accept=".bin" />
-                    <button id="decryptBtn" class="tp-btn">Dekript Et</button>
+        <main class="content-area">
+            <div class="panel-header">Sistem Araçları - Yapılandırma Yöneticisi</div>
+            
+            <div class="panel-content">
+                <p>Mevcut yapılandırma ayarlarını yükleyebilir, analiz edebilir ve kök (root) yetkilerini düzenleyerek cihaza geri yükleyebilirsiniz.</p>
+                
+                <hr class="separator" />
+
+                <div class="section">
+                    <label><b>1. Yapılandırma Dosyası (.bin):</b></label>
+                    <input type="file" id="fileInput" accept=".bin" class="file-input" />
+                    <button id="decryptBtn" class="router-btn">Deşifre Et</button>
+                    <span id="status" class="status-msg">Hazır.</span>
                 </div>
 
-                <div id="status" class="status-msg">Dosya bekleniyor...</div>
+                <hr class="separator" />
 
-                <textarea
-                    id="resultArea"
-                    readonly
-                    spellcheck="false"
-                    placeholder="XML verisi burada görünecek..."
-                ></textarea>
+                <div class="section">
+                    <div class="toolbar">
+                        <label><b>2. Gelişmiş XML Düzenleyici:</b></label>
+                        <button id="escalateBtn" class="router-btn btn-danger" disabled>Root Yetkisi Enjekte Et (SuperAdmin)</button>
+                    </div>
+                    <textarea
+                        id="resultArea"
+                        spellcheck="false"
+                        placeholder="Deşifre edilen XML verisi burada görünecek. Manuel düzenleme yapabilirsiniz..."
+                    ></textarea>
+                </div>
 
-                <div class="action-row right">
-                    <button id="downloadBtn" class="tp-btn hidden">İndir (.xml)</button>
+                <hr class="separator" />
+
+                <div class="section action-footer">
+                    <label><b>3. Yeni Yapılandırmayı Dışa Aktar:</b></label>
+                    <button id="encryptBtn" class="router-btn btn-success" disabled>Şifrele & Paketi İndir (.bin)</button>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script src="decryptor.js"></script>
 </body>
