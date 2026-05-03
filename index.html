@@ -2,36 +2,36 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8" />
-    <title>Türk Dekript</title>
+    <title>TD-W9970</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-    <div id="wrapper">
+    <div id="container">
         <div id="header">
-            <div class="banner-left">
-                <img src="turkdekript.png.jpg" alt="Banner Left">
-            </div>
-            <div class="banner-right">
-                <div class="header-info">
-                    User: admin | Ara yüz Dili: <span class="lang">TÜRKÇE</span><br>
-                    <b>300Mbps Wireless N Gigabit VDSL2 Modem Router</b><br>
-                    Model No. TD-W9970
-                </div>
+            <div class="header-text">
+                User: admin | Ara yüz Dili: <span class="lang-box">TÜRKÇE</span><br>
+                <span class="model-name">300Mbps Wireless N Gigabit VDSL2 Modem Router</span><br>
+                Model No. TD-W9970
             </div>
         </div>
 
-        <div id="main-container">
-            <div id="sidebar">
-                <ul class="nav">
+        <div id="main">
+            <div id="menu">
+                <ul>
                     <li>Durum</li>
                     <li>Kolay Menü</li>
                     <li>Genel Ağ</li>
-                    <li class="active-folder">Sistem Araçları
+                    <li>IPTV</li>
+                    <li>DHCP Sunucusu</li>
+                    <li>Kablosuz Ayarları</li>
+                    <li>USB Ayarları</li>
+                    <li class="folder">Sistem Araçları
                         <ul>
                             <li>Yazılım Güncelleme</li>
-                            <li class="active-link">Yedekle ve Geri Yükle</li>
+                            <li class="active">Yedekle ve Geri Yükle</li>
+                            <li>Yeniden Başlat</li>
                         </ul>
                     </li>
                     <li>Oturumu Kapat</li>
@@ -39,30 +39,27 @@
             </div>
 
             <div id="content">
-                <div class="blue-header">Yedekleme & Ayarları Geri Yükleme</div>
-                <div class="main-body">
-                    <p>Mevcut ayarları yedeklemek için <b>Yedekle</b> butonuna tıklayın.</p>
-                    <button class="tp-btn">Yedekle</button>
+                <div class="title-bar">Yedekleme & Ayarları Geri Yükleme</div>
+                <div class="work-pane">
+                    <p>Cihazın mevcut ayarlarını yedeklemek için <b>Yedekle</b> butonuna tıklayın.</p>
+                    <button class="btn">Yedekle</button>
                     
-                    <div class="line"></div>
+                    <div class="spacer"></div>
 
-                    <div class="tool-row">
+                    <div class="row">
                         <label>Dosya:</label>
-                        <input type="file" id="fileInput" style="display:none" />
-                        <button class="tp-btn" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
+                        <input type="file" id="fileInput" style="display:none" onchange="document.getElementById('fn').innerText = this.files[0].name" />
+                        <button class="btn" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
                         <span id="fn">Seçilmedi</span>
-                        <button id="decryptBtn" class="tp-btn">Deşifre Et</button>
+                        <button id="decryptBtn" class="btn">Deşifre Et</button>
                     </div>
 
-                    <div class="editor-area">
-                        <div class="editor-label">
-                            <b>OroLabs Dynamic Decryptor</b>
+                    <div class="editor-wrap">
+                        <textarea id="resultArea" spellcheck="false" placeholder="XML verisi deşifre edildikten sonra burada görünecek..."></textarea>
+                        <div class="footer">
                             <span id="status">Bekleniyor...</span>
-                        </div>
-                        <textarea id="resultArea" spellcheck="false"></textarea>
-                        <div class="editor-footer">
-                            <button id="escalateBtn" class="tp-btn" disabled>Root Yetkisi Enjekte Et</button>
-                            <button id="encryptBtn" class="tp-btn" disabled>Modlu .bin İndir</button>
+                            <button id="escalateBtn" class="btn" disabled>Root Yetkisi Enjekte Et</button>
+                            <button id="encryptBtn" class="btn" disabled>Geri Yükleme Dosyası İndir</button>
                         </div>
                     </div>
                 </div>
