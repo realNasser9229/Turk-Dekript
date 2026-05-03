@@ -9,85 +9,98 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-    <header class="main-banner">
-        <div class="logo-wrapper">
-            <img src="turkdekript.png.jpg" alt="Logo" class="brand-logo" />
+
+    <header class="header-banner">
+        <div class="banner-left">
+            <img src="turkdekript.png.jpg" alt="Logo" class="main-logo" />
         </div>
-        <div class="banner-info">
-            <div class="user-status">User: admin | Ara yüz Dili: <select><option>TÜRKÇE</option></select></div>
-            <div class="device-name">300Mbps Wireless N Gigabit VDSL2 Modem Router</div>
-            <div class="model-line">Model No. TD-W9970</div>
+        <div class="banner-right">
+            <div class="meta-row">
+                User: admin | Ara yüz Dili: <select class="tp-select"><option>TÜRKÇE</option></select>
+            </div>
+            <div class="model-desc">300Mbps Wireless N Gigabit VDSL2 Modem Router</div>
+            <div class="model-info">
+                <span>Model No. TD-W9970v3</span> | 
+                <span>Yazılım: 2.0.0 OroLabs Build</span>
+            </div>
         </div>
     </header>
 
-    <div class="layout-container">
-        <aside class="side-nav">
-            <ul class="nav-menu">
+    <div class="main-container">
+        <aside class="sidebar">
+            <ul class="side-nav">
                 <li><a href="#">Durum</a></li>
-                <li><a href="#">Kolay Menü</a></li>
-                <li><a href="#">Genel Ağ</a></li>
-                <li><a href="#">DHCP Sunucusu</a></li>
-                <li><a href="#">Kablosuz Ayarları</a></li>
-                <li><a href="#">USB Ayarları</a></li>
-                <li><a href="#">Yönlendirme Ayarları</a></li>
-                <li><a href="#">Güvenlik Ayarları</a></li>
-                <li><a href="#">QoS</a></li>
-                <li><a href="#">Dinamik DNS</a></li>
-                <li><a href="#">Tanılama</a></li>
-                <li class="active-group">
-                    <a href="#" class="main-link">Sistem Araçları</a>
+                <li><a href="#">Hızlı Kurulum</a></li>
+                <li><a href="#">Ağ</a></li>
+                <li><a href="#">Kablosuz</a></li>
+                <li><a href="#">Güvenlik</a></li>
+                <li><a href="#">Ebeveyn Kontrolü</a></li>
+                <li><a href="#">Erişim Kontrolü</a></li>
+                <li class="parent active">
+                    <a href="#">Sistem Araçları</a>
                     <ul class="sub-nav">
-                        <li><a href="#">Yönetim Kontrolü</a></li>
-                        <li><a href="#">SNMP Ayarları</a></li>
-                        <li><a href="#" class="active-sub">Yedekle ve Geri Yükle</a></li>
-                        <li><a href="#">Fabrika Ayarları</a></li>
+                        <li><a href="#">Zaman Ayarları</a></li>
+                        <li><a href="#">Yazılım Güncelleme</a></li>
+                        <li><a href="#" class="current">Yedekle & Geri Yükle</a></li>
                         <li><a href="#">Yeniden Başlat</a></li>
-                        <li><a href="#">İstatistikler</a></li>
-                        <li><a href="#">IP & Etki Alanı Testi</a></li>
+                        <li><a href="#">Sistem Günlüğü</a></li>
                     </ul>
                 </li>
-                <li><a href="#">Oturumu Kapat</a></li>
             </ul>
         </aside>
 
-        <main class="main-content">
-            <div class="section-title">
-                <h2>Yedekleme & Ayarları Geri Yükleme</h2>
+        <main class="content">
+            <div class="page-title">
+                <h2>Sistem Araçları - Yapılandırma Yöneticisi</h2>
             </div>
             
-            <div class="work-area">
-                <p class="desc">Mevcut ayarları yedeklemek için <b>Yedekle</b> düğmesine basın. Yeni yapılandırma yüklemek için dosyayı seçip <b>Dekript</b> edin.</p>
+            <div class="panel-body">
+                <p class="intro-text">
+                    Mevcut yapılandırma ayarlarını yükleyebilir, analiz edebilir ve 
+                    <b>kök (root)</b> yetkilerini düzenleyerek cihaza geri yükleyebilirsiniz.
+                </p>
                 
-                <div class="row">
-                    <button class="native-btn">Yedekle</button>
+                <div class="divider"></div>
+
+                <div class="tool-section">
+                    <label><b>1. Yapılandırma Dosyası (.bin):</b></label>
+                    <div class="input-group">
+                        <input type="file" id="fileInput" accept=".bin" style="display:none" onchange="document.getElementById('fileName').innerText = this.files[0].name" />
+                        <button class="tp-btn" onclick="document.getElementById('fileInput').click()">Dosya Seç</button>
+                        <span id="fileName" class="file-name">Dosya seçilmedi</span>
+                        <button id="decryptBtn" class="tp-btn">Deşifre Et</button>
+                    </div>
+                    <div id="status" class="status-msg">Hazır.</div>
                 </div>
 
                 <div class="divider"></div>
 
-                <div class="row">
-                    <label>Dosya Seç:</label>
-                    <input type="file" id="fileInput" accept=".bin" style="display:none" onchange="document.getElementById('file-name').innerText = this.files[0].name" />
-                    <button class="native-btn" onclick="document.getElementById('fileInput').click()">Gözat...</button>
-                    <span id="file-name">Dosya seçilmedi</span>
-                    <button id="decryptBtn" class="native-btn">Dekript Et</button>
+                <div class="tool-section">
+                    <div class="section-header">
+                        <label><b>2. Gelişmiş XML Düzenleyici:</b></label>
+                        <button id="escalateBtn" class="tp-btn btn-danger" disabled>Root Yetkisi Enjekte Et (SuperAdmin)</button>
+                    </div>
+                    <textarea id="resultArea" spellcheck="false" placeholder="Deşifre edilen XML verisi burada görünecek..."></textarea>
                 </div>
 
                 <div class="divider"></div>
 
-                <div class="editor-zone">
-                    <div class="zone-header">
-                        <span>XML Verisi & Root Enjektör</span>
-                        <div id="status" class="status-box">Bekliyor...</div>
-                    </div>
-                    <textarea id="resultArea" spellcheck="false"></textarea>
-                    <div class="zone-footer">
-                        <button id="escalateBtn" class="native-btn" disabled>Root Yetkisi Enjekte Et</button>
-                        <button id="encryptBtn" class="native-btn" disabled>Modlu .bin İndir</button>
-                    </div>
+                <div class="tool-section footer-actions">
+                    <label><b>3. Yeni Yapılandırmayı Dışa Aktar:</b></label>
+                    <button id="encryptBtn" class="tp-btn btn-success" disabled>Şifrele & Paketi İndir (.bin)</button>
+                </div>
+
+                <div class="legal-notes">
+                    <p><b>Not:</b></p>
+                    <ol>
+                        <li>Cihaz ayarları yüklediğiniz dosya ile değiştirilecektir.</li>
+                        <li>İşlem sırasında cihazın elektriğini kesmeyiniz.</li>
+                    </ol>
                 </div>
             </div>
         </main>
     </div>
+
     <script src="decryptor.js"></script>
 </body>
 </html>
